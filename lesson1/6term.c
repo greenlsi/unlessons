@@ -1,4 +1,4 @@
-/***********************************************************************************
+x/***********************************************************************************
   Filename:     6term.c
 
   Description:  GreenNode v1 - Board for 6 thermistors (ADCs)  
@@ -31,7 +31,8 @@ network_address netAdd; // network address structure
 #define     SELECT          SS_SPI_SW3
 
 /* Leds init for GreenNode V1 */
-void leds_init_V1(void){
+void leds_init (void){
+#if (VERSION == 0)
   INIT_GN_GLED();
   GN_GLED = 1;
   sleep(1);
@@ -45,10 +46,9 @@ void leds_init_V1(void){
   
   INIT_SW3();
   SELECT = 0; 
-}
 
 /* Leds init for GreenNode V2 */
-void leds_init_V2(void){
+#elif (VERSION == 1)
   INIT_LED_SW2();   /* Define LED_SW2 port as output */
   LED_SW2 = 1;	    /* LED=ON */
   sleep(1);
@@ -56,6 +56,9 @@ void leds_init_V2(void){
   
   INIT_SW1();	    /* Define SW1 port as output */
   SW1 = 1;          /* Remove current to sensors. PMOS1=OFF */
+#else
+   #error "Version incorrecta!!"
+#endif
 }
 
 void adcs_init_V1(void){
