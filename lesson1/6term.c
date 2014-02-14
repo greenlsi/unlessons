@@ -30,37 +30,6 @@ network_address netAdd; // network address structure
 //********SWITCHES CONFIGURATION********************
 #define     SELECT          SS_SPI_SW3
 
-/* Leds init for GreenNode V1 */
-void leds_init (void){
-#if (VERSION == 0)
-  INIT_GN_GLED();
-  GN_GLED = 1;
-  sleep(1);
-  GN_GLED = 0;
-  
-  INIT_SW1();
-  RLED_SW1 = 1;    // Retrieve current from sensors
-  
-  INIT_SW2();
-  GLED_SW2 = 0;
-  
-  INIT_SW3();
-  SELECT = 0; 
-
-/* Leds init for GreenNode V2 */
-#elif (VERSION == 1)
-  INIT_LED_SW2();   /* Define LED_SW2 port as output */
-  LED_SW2 = 1;	    /* LED=ON */
-  sleep(1);
-  LED_SW2 = 0;      /* LED=OFF */
-  
-  INIT_SW1();	    /* Define SW1 port as output */
-  SW1 = 1;          /* Remove current to sensors. PMOS1=OFF */
-#else
-   #error "Version incorrecta!!"
-#endif
-}
-
 void adcs_init_V1(void){
   /* Configure MODE as TRISTATE, 197 KOhm input resistance in sampling (mode ADC ON)*/
   IO_IMODE_PORT_PIN(0, 0, IO_IMODE_TRI);
@@ -120,14 +89,7 @@ main(void)
    * Example of Port direction configuration:
    * ADC_ENABLE_CHANNEL(ADC_AIN0); // Configure P0_0 as ADC input */
   
-  if (version == 0x00){ 	/* GreenNode V1 */
-    leds_init_V1();
-    adcs_init_V1();
-  } 
-  else { 			/* GreenNode V2 */
-    leds_init_V2();
-    adcs_init_V2();
-  }
+  leds_init();
   
   /***********************************************************
    * This two instructions must be together and at the begining

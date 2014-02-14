@@ -198,5 +198,6 @@ typedef struct {
   UINT16 battery;
 } pressure;
 
+void leds_init (void);
    
 #endif

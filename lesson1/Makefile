@@ -17,12 +17,19 @@ LD = aslink
 
 
 TARGETS= 6term-1h.bin \
-	6term.bin \
+	6term_v1.bin \
+	6term_v2.bin \
 	curr.bin \
 	1pres.bin \
 	6curr-test.bin \
 	board-test.bin
 #do not delete this line
+
+6term_v1.bin : 6term.rel\
+	 arch_v1.rel 
+
+6term_v2.bin : 6term.rel\
+	 arch_v2.rel 
 
 #SETTING DEVICE ADDR. CHOOSING KIND OF SENSORS
 ifdef TH_ADDR
