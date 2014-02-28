@@ -10,4 +10,6 @@ main ()
   node_send (v1, "hola");
   node_send (v2, "caracola");
   node_send (c, "adios");
+  
+  return 0;
 }
