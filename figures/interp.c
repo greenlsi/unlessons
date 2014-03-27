@@ -3,11 +3,13 @@
 #include <ctype.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include "window.h"
 
 static int done = 0;
 
 int com_help (char* arg);
 int com_quit (char* arg);
+int com_window (char* arg);
 
 typedef struct {
   char *name;
@@ -19,6 +21,7 @@ cmd_t commands[] = {
   { "help", com_help, "Display this text" },
   { "?", com_help, "Synonym for `help'" },
   { "quit", com_quit, "Quit" },
+  { "window", com_window, "Create window" },
   { (char *)NULL, NULL, (char *)NULL }
 };
 
@@ -222,5 +225,12 @@ int
 com_quit (char *arg)
 {
   done = 1;
+  return 0;
+}
+
+int
+com_window (char *arg)
+{
+  window_new ();
   return 0;
 }

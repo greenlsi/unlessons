@@ -4,7 +4,7 @@ LDLIBS=-lpthread -lreadline
 
 all: main screen_test
 
-main: main.o tasks.o screen.o interp.c
+main: main.o tasks.o screen.o interp.o window.o
 
 screen_test: screen_test.o tasks.o
 
