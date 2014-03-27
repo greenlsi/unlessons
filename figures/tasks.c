@@ -45,6 +45,7 @@ void
 timeval_add (struct timeval *res, struct timeval *a, struct timeval *b)
 {
   res->tv_sec = a->tv_sec + b->tv_sec
-    + a->tv_usec / 1000000 + b->tv_usec / 1000000;
+    + a->tv_usec / 1000000 + b->tv_usec / 1000000; 
   res->tv_usec = a->tv_usec % 1000000 + b->tv_usec % 1000000;
 }
+

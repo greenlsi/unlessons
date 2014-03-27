@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "tasks.h"
-#include "screen.h"
+#include "sensor.h"
+
 
 static int deltax = 1;
 static int deltay = 0;
@@ -36,6 +37,8 @@ main (void)
 {
   //pthread_t t_snake;
   //void* ret;
+	sensor1_init();
+sensor_sim_task();
 
   //screen_init (2);
 
