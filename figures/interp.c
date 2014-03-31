@@ -3,13 +3,11 @@
 #include <ctype.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include "window.h"
 
 static int done = 0;
 
 int com_help (char* arg);
 int com_quit (char* arg);
-int com_window (char* arg);
 
 typedef struct {
   char *name;
@@ -21,7 +19,6 @@ cmd_t commands[] = {
   { "help", com_help, "Display this text" },
   { "?", com_help, "Synonym for `help'" },
   { "quit", com_quit, "Quit" },
-  { "window", com_window, "Create window" },
   { (char *)NULL, NULL, (char *)NULL }
 };
 
@@ -36,8 +33,9 @@ interp_run (void)
   initialize_readline ();
   while (! done) {
     char* s;
-    char* line = readline (">>> ");
+    char* line;
 
+    line = readline (">>> ");
     if (!line)
       break;
 
@@ -130,7 +128,7 @@ void
 initialize_readline (void)
 {
   /* Allow conditional parsing of the ~/.inputrc file. */
-  rl_readline_name = "LSEL2014";
+  rl_readline_name = "ISEL2014";
 
   /* Tell the completer that we want a crack first. */
   rl_attempted_completion_function = (CPPFunction *)interp_completion;
@@ -228,9 +226,3 @@ com_quit (char *arg)
   return 0;
 }
 
-int
-com_window (char *arg)
-{
-  window_new ();
-  return 0;
-}

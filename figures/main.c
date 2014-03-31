@@ -1,7 +1,7 @@
+#include <unistd.h>
 #include <stdlib.h>
 #include "tasks.h"
-#include "sensor.h"
-
+#include "screen.h"
 
 static int deltax = 1;
 static int deltay = 0;
@@ -35,16 +35,12 @@ void interp_run(void);
 int
 main (void)
 {
-  //pthread_t t_snake;
-  //void* ret;
-	sensor1_init();
-sensor_sim_task();
+  pthread_t t_snake;
 
-  //screen_init (2);
-
-  //create_task (&t_snake, snake, NULL, 500, 2, 1024);
+  screen_init (2);
+  create_task (&t_snake, snake, NULL, 500, 2, 1024);
 
   interp_run ();
-  //pthread_join(t_snake, &ret);
-  return 0;
+
+  exit (0);
 }

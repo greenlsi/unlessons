@@ -65,7 +65,8 @@ screen_init (int prio)
     *scr(columns, y) = '\0';
 
   init_mutex (&m_scr, prio);
-  puts ("\e[2J");
+  printf ("\e[%d;1f\e7\e[1J\e8", lines + 1);
+  fflush (stdout);
 
   tcgetattr(0, &oldtc);
   newtc = oldtc;
@@ -81,12 +82,15 @@ screen_refresh (void)
 {
   int y;
 
+  printf ("\e7\e[?25l");
+
   pthread_mutex_lock (&m_scr);
   for (y = 0; y < lines; ++y) {
     printf ("\e[%d;1f%s", y+1, scr(0,y));
   }
   pthread_mutex_unlock (&m_scr);
-  printf ("\e[%d;1f", lines);
+
+  printf ("\e8\e[?25h");
   fflush (stdout);
 }
 
