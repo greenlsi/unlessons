@@ -1,10 +1,11 @@
 CC=gcc
-CFLAGS=-Wall -g -O2 $(DEFS)
+DEBUG='-DDEBUG(x)=x' -include stdio.h
+CFLAGS=-Wall -g -O2 $(DEBUG)
 LDLIBS=-lpthread -lreadline
 
 all: main screen_test
 
-main: main.o tasks.o screen.o interp.o
+main: main.o tasks.o screen.o interp.o window.o
 
 screen_test: screen_test.o tasks.o
 

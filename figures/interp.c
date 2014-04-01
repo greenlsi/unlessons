@@ -4,6 +4,8 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+#define MAXCMDS 100
+
 static int done = 0;
 
 int com_help (char* arg);
@@ -15,17 +17,33 @@ typedef struct {
   char *doc;
 } cmd_t;
 
-cmd_t commands[] = {
+cmd_t commands[MAXCMDS] = {
   { "help", com_help, "Display this text" },
   { "?", com_help, "Synonym for `help'" },
   { "quit", com_quit, "Quit" },
-  { (char *)NULL, NULL, (char *)NULL }
+  { (char *) NULL, NULL, (char *) NULL },
 };
 
 char* stripwhite (char *string);
 cmd_t* find_command (char *name);
 void initialize_readline (void);
 int execute_line (char *line);
+
+int
+interp_addcmd (char* cmd, int (*cmd_func) (char*), char* doc)
+{
+  int i;
+  for (i = 0; i < (MAXCMDS - 1); ++i) {
+    if (! commands[i].name) {
+      commands[i].name = cmd;
+      commands[i].func = cmd_func;
+      commands[i].doc = doc;
+      commands[++i].name = NULL;
+      return 1;
+    }
+  }
+  return 0;
+}
 
 void
 interp_run (void)
