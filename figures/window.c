@@ -161,7 +161,7 @@ window_text (window_t* this, char* txt)
 void
 window_order (window_t* this, int pos)
 {
-  int i, current;
+  int i, j, current;
   for (i = 0; win[i]; ++i) {
     if (win[i] == this) {
       current = i;

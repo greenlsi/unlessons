@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <ctype.h>
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -9,6 +10,7 @@
 static int done = 0;
 
 int com_help (char* arg);
+int com_sleep (char* arg);
 int com_quit (char* arg);
 
 typedef struct {
@@ -20,6 +22,7 @@ typedef struct {
 cmd_t commands[MAXCMDS] = {
   { "help", com_help, "Display this text" },
   { "?", com_help, "Synonym for `help'" },
+  { "sleep", com_sleep, "Wait <n> seconds" },
   { "quit", com_quit, "Quit" },
   { (char *) NULL, NULL, (char *) NULL },
 };
@@ -236,7 +239,13 @@ com_help (char *arg)
 }
 
 
-/* The user wishes to quit using this program.  Just set DONE non-zero. */
+int
+com_sleep (char *arg)
+{
+  sleep (atoi(arg));
+  return 0;
+}
+
 int
 com_quit (char *arg)
 {
