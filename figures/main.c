@@ -28,17 +28,19 @@ snake (void* arg)
   static int y = 3;
   
   struct timeval next_activation;
-  struct timeval now, timeout;
-  struct timeval period = { 0, 500000 };
+  struct timeval now, timeout, rtime;
 
   interp_addcmd ("x", cmd_x, "Set x increment");
   interp_addcmd ("y", cmd_y, "Set y increment");
   gettimeofday (&next_activation, NULL);
   while (1) {
+    struct timeval *period = task_get_period (pthread_self());
+    timeval_add (&next_activation, &next_activation, period);
     gettimeofday (&now, NULL);
     timeval_sub (&timeout, &next_activation, &now);
+    timeval_sub (&rtime, period, &timeout);
+    task_register_time (pthread_self(), &rtime);
     select (0, NULL, NULL, NULL, &timeout) ;
-    timeval_add (&next_activation, &next_activation, &period);
 
     x += deltax;
     y += deltay;
@@ -49,12 +51,11 @@ snake (void* arg)
 int
 main (void)
 {
-  pthread_t t_snake;
-
+  task_setup();
   screen_init (2);
   window_setup();
   
-  create_task (&t_snake, snake, NULL, 500, 2, 1024);
+  task_new (snake, 500, 500, 2, 1024);
 
   interp_run ();
 

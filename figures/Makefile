@@ -3,14 +3,21 @@ DEBUG='-DDEBUG(x)=x' -include stdio.h
 CFLAGS=-Wall -g -O2 $(DEBUG)
 LDLIBS=-lpthread -lreadline
 
-all: main screen_test
+all: main
+
+test: main
+	@for i in test/* ; do \
+	  printf "%20s" $$i ; \
+	  LINES=24 COLUMNS=80 ./main < $$i 2>&1 > $$i.out ; \
+	  if cmp $$i.out $$i.exp ; then echo OK ; else echo FAIL ; fi ; \
+	done
 
 main: main.o tasks.o screen.o interp.o window.o
-
-screen_test: screen_test.o tasks.o
 
 clean:
 	$(RM) *.o *~ main *_test
 
 %_test.o: %.c
 	$(CC) -DTEST $(CFLAGS) -c $< -o $@
+
+.PHONY: test

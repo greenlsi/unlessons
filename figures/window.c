@@ -14,7 +14,6 @@ static int
 cmd_window (char* arg)
 {
   if (0 == strcmp (arg, "new")) {
-    DEBUG(printf("new window\n"));
     window_new ();
     return 0;
   }
@@ -51,6 +50,10 @@ cmd_window (char* arg)
   }
   if (0 == strncmp (arg, "text ", strlen("text "))) {
     window_text (win[current_window], arg + strlen("text "));
+    return 0;
+  }
+  if (0 == strncmp (arg, "order ", strlen("order "))) {
+    window_order (win[current_window], atoi (arg + strlen("order ")));
     return 0;
   }
   return 1;
@@ -95,16 +98,18 @@ window_new (void)
 void
 window_init (window_t* this)
 {
-  this->text = "Window";
   this->x = this->y = 3;
   this->width = 20;
   this->height = 10;
+  this->text = (char*) malloc ((this->width - 2) * (this->height - 2));
+  strcpy (this->text, "Window");
   window_draw (this);
 }
 
 void
 window_destroy (window_t* this)
 {
+  free (this->text);
   free (this);
 }
 
@@ -148,13 +153,14 @@ window_resize (window_t* this, int w, int h)
 {
   this->width = w;
   this->height = h;
+  this->text = (char*) realloc (this->text, (w - 2) * (h - 2));
   window_redraw ();
 }
 
 void
 window_text (window_t* this, char* txt)
 {
-  this->text = txt;
+  strcpy (this->text, txt);
   window_redraw ();
 }
 

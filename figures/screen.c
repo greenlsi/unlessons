@@ -11,15 +11,17 @@ void*
 refresh_screen (void* arg)
 {
   struct timeval next_activation;
-  struct timeval now, timeout;
-  struct timeval period = { 0, 100000 };
+  struct timeval now, timeout, rtime;
   
   gettimeofday (&next_activation, NULL);
   while (1) {
+    struct timeval *period = task_get_period (pthread_self());
+    timeval_add (&next_activation, &next_activation, period);
     gettimeofday (&now, NULL);
     timeval_sub (&timeout, &next_activation, &now);
+    timeval_sub (&rtime, period, &timeout);
+    task_register_time (pthread_self(), &rtime);
     select (0, NULL, NULL, NULL, &timeout) ;
-    timeval_add (&next_activation, &next_activation, &period);
 
     screen_refresh();
   }
@@ -55,9 +57,9 @@ void
 screen_init (int prio)
 {
   columns = getenv_int ("COLUMNS", 80);
-  lines = getenv_int ("LINES", 24);
+  lines = getenv_int ("LINES", 24) / 2;
 
-  init_mutex (&m_scr, prio);
+  mutex_init (&m_scr, prio);
   screen = (char *) malloc ((columns + 1) * lines);
   screen_clear ();
 
@@ -70,7 +72,7 @@ screen_init (int prio)
   newtc.c_lflag |= ECHO;
   tcsetattr(0, TCSANOW, &newtc);
 
-  create_task (&t_screen, refresh_screen, NULL, 1000, 1, 1024);
+  t_screen = task_new (refresh_screen, 500, 500, 1, 1024);
 }
 
 void
