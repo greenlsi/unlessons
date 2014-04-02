@@ -3,6 +3,7 @@
 #include "tasks.h"
 #include "screen.h"
 #include "window.h"
+#include "sensor1.h"
 #include "interp.h"
 
 static int deltax = 1;
@@ -51,9 +52,10 @@ snake (void* arg)
 int
 main (void)
 {
-  task_setup();
+  task_setup ();
   screen_init (2);
-  window_setup();
+  window_setup ();
+  sensor1_setup (3);
   
   task_new (snake, 500, 500, 2, 1024);
 

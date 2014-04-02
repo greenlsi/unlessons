@@ -1,7 +1,18 @@
-CC=gcc
+CC = gcc
+CFLAGS = $(SYS_CFLAGS) -Wall -g -O2 $(DEBUG)
+LDLIBS = $(SYS_LDLIBS) -lreadline
+
+# debug options
 DEBUG='-DDEBUG(x)=x' -include stdio.h
-CFLAGS=-Wall -g -O2 $(DEBUG)
-LDLIBS=-lpthread -lreadline
+
+# native RaspberryPi
+#SYS_CFLAGS = $(shell xeno-config --skin posix --cflags)
+#SYS_LDLIBS = $(shell xeno-config --skin posix --ldflags)
+
+# simulated environmet
+SYS_CFLAGS = -I.
+SYS_LDLIBS = -lpthread
+SIM_OBJS = wiringPi.o sensor1_sim.o
 
 all: main
 
@@ -16,7 +27,7 @@ test: main
 	  fi ; \
 	done
 
-main: main.o tasks.o screen.o interp.o window.o
+main: main.o tasks.o screen.o interp.o window.o sensor1.o $(SIM_OBJS)
 
 clean:
 	$(RM) *.o *~ main *_test test/*.out
