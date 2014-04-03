@@ -18,5 +18,6 @@ wiringPiISR (int pin, int edgeType, void (*func)(void))
 void
 wiringPi_gen_interrupt (int pin)
 {
-  isr[pin] ();
+  if (isr[pin])
+    (*isr[pin]) ();
 }

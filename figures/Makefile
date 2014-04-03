@@ -27,7 +27,8 @@ test: main
 	  fi ; \
 	done
 
-main: main.o tasks.o screen.o interp.o window.o sensor1.o $(SIM_OBJS)
+main:	main.o tasks.o screen.o interp.o window.o \
+	observer.o sensor1.o actuator1.o $(SIM_OBJS)
 
 clean:
 	$(RM) *.o *~ main *_test test/*.out

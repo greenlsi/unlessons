@@ -1,5 +1,7 @@
+#include <stdlib.h>
 #include "wiringPi.h"
 #include "tasks.h"
+#include "sensor1.h"
 
 static pthread_t t_sensor1_sim;
 
@@ -7,25 +9,24 @@ static
 void*
 sensor1_sim (void* arg)
 {
-  struct timeval next_activation;
-  struct timeval now, timeout, rtime;
+  static int i = 0;
+  struct timeval timeout;
   
-  gettimeofday (&next_activation, NULL);
   while (1) {
     struct timeval *period = task_get_period (pthread_self());
-    timeval_add (&next_activation, &next_activation, period);
-    gettimeofday (&now, NULL);
-    timeval_sub (&timeout, &next_activation, &now);
-    timeval_sub (&rtime, period, &timeout);
-    task_register_time (pthread_self(), &rtime);
+    timeout.tv_sec = period->tv_sec;
+    timeout.tv_usec = period->tv_usec
+      + rand() % (period->tv_usec / 2)
+      - (period->tv_usec / 4);
     select (0, NULL, NULL, NULL, &timeout) ;
 
-    wiringPi_gen_interrupt (0);
+    wiringPi_gen_interrupt (i);
+    i = (i + 1) % NSENSOR1;
   }
 }
 
 void
 sensor1_setup_sim (void)
 {
-  t_sensor1_sim = task_new ("s1sim", sensor1_sim, 500, 500, 1, 1024);
+  t_sensor1_sim = task_new ("s1sim", sensor1_sim, 1500, 1500, 1, 1024);
 }

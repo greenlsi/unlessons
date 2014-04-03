@@ -4,6 +4,7 @@
 #include "screen.h"
 #include "window.h"
 #include "sensor1.h"
+#include "actuator1.h"
 #include "interp.h"
 
 static int deltax = 1;
@@ -57,6 +58,7 @@ main (void)
   screen_setup (2);
   window_setup ();
   sensor1_setup (3);
+  actuator1_setup ();
   
   task_new ("snake", snake, 500, 500, 2, 1024);
 
