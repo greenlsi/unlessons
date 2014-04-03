@@ -54,7 +54,7 @@ int getenv_int (const char *var, int defval)
 }
 
 void
-screen_init (int prio)
+screen_setup (int prio)
 {
   columns = getenv_int ("COLUMNS", 80);
   lines = getenv_int ("LINES", 24) / 2;

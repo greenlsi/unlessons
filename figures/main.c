@@ -53,7 +53,8 @@ int
 main (void)
 {
   task_setup ();
-  screen_init (2);
+
+  screen_setup (2);
   window_setup ();
   sensor1_setup (3);
   

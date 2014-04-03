@@ -1,7 +1,7 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
-void screen_init (int prio);
+void screen_setup (int prio);
 void screen_refresh (void);
 
 void screen_clear (void);
