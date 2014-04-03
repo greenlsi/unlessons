@@ -9,8 +9,10 @@
 
 typedef struct taskdesk_t {
   pthread_t tid;
+  const char* name;
   struct timeval period;
   struct timeval deadline;
+  int prio;
   struct timeval maxtime;
 } taskdesc_t;
 
@@ -33,11 +35,12 @@ cmd_task (char* arg)
 {
   if (0 == strcmp (arg, "list")) {
     int i;
-    printf ("Id\tT\tD\tR\n");
+    printf ("Id\tName           \tT\tD\tP\tR\n");
     for (i = 0; i < ntasks; ++i) {
-      printf ("%d\t%d\t%d\t%d\n", i,
+      printf ("%d\t%-15s\t%d\t%d\t%d\t%d\n", i, desc[i].name,
               timeval_get_ms(&desc[i].period),
               timeval_get_ms(&desc[i].deadline),
+              desc[i].prio,
               timeval_get_ms(&desc[i].maxtime));
     }
     return 0;
@@ -76,7 +79,7 @@ task_get_deadline (pthread_t tid)
 }
 
 pthread_t
-task_new (void *(*f)(void *),
+task_new (const char* name, void *(*f)(void *),
           int period_ms, int deadline_ms,
           int prio, int stacksize)
 {
@@ -92,12 +95,12 @@ task_new (void *(*f)(void *),
   pthread_attr_setschedparam (&attr, &sparam);
   pthread_create (&tdesc->tid, &attr, f, tdesc);
 
+  tdesc->name = name;
+  tdesc->prio = prio;
   tdesc->period.tv_sec = period_ms / 1000;
   tdesc->period.tv_usec = (period_ms % 1000) * 1000;
-
   tdesc->deadline.tv_sec = deadline_ms / 1000;
   tdesc->deadline.tv_usec = (deadline_ms % 1000) * 1000;
-
   tdesc->maxtime.tv_sec = tdesc->maxtime.tv_usec = 0;
 
   return tdesc->tid;

@@ -72,7 +72,7 @@ screen_init (int prio)
   newtc.c_lflag |= ECHO;
   tcsetattr(0, TCSANOW, &newtc);
 
-  t_screen = task_new (refresh_screen, 500, 500, 1, 1024);
+  t_screen = task_new ("screen", refresh_screen, 500, 500, 1, 1024);
 }
 
 void

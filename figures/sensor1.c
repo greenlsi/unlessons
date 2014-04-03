@@ -43,7 +43,7 @@ sensor1_setup (int prio)
 {
   wiringPiSetup ();
   wiringPiISR (0, INT_EDGE_RISING, sensor1_isr);
-  t_sensor1 = task_new (sensor1_task, 500, 500, prio, 1024);
+  t_sensor1 = task_new ("sensor1", sensor1_task, 500, 500, prio, 1024);
   sensor1_setup_sim ();
 }
 

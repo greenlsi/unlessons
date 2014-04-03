@@ -27,5 +27,5 @@ sensor1_sim (void* arg)
 void
 sensor1_setup_sim (void)
 {
-  t_sensor1_sim = task_new (sensor1_sim, 500, 500, 1, 1024);
+  t_sensor1_sim = task_new ("s1sim", sensor1_sim, 500, 500, 1, 1024);
 }

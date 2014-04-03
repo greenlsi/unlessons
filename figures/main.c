@@ -57,7 +57,7 @@ main (void)
   window_setup ();
   sensor1_setup (3);
   
-  task_new (snake, 500, 500, 2, 1024);
+  task_new ("snake", snake, 500, 500, 2, 1024);
 
   interp_run ();
 
