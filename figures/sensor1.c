@@ -79,8 +79,8 @@ sensor1_init (sensor1_t* this, int id)
 void
 sensor1_process_data (sensor1_t* this)
 {
-  observable_notify_observers ((observable_t*) this);
   /* ... */
+  observable_notify_observers ((observable_t*) this);
 }
 
 

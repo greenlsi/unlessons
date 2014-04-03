@@ -12,6 +12,6 @@ void actuator1_setup (void);
 
 actuator1_t* actuator1_new (int id);
 void actuator1_init (actuator1_t* this, int id);
-void actuator1_notify (observer_t* this);
+void actuator1_notify (observer_t* this, observable_t* observable);
 
 #endif
