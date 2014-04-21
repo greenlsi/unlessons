@@ -21,8 +21,12 @@ clean:
 %.output: %
 	$< 2>&1 > $@
 
+%_pg: LDFLAGS = $(LDFLAGS_pg)
+%_pg: LDLIBS = $(LDLIBS_pg)
 %_pg.o: %.c
-	$(CC) $(LDFLAGS_pg) -o $@ $^ $(LDLIBS_pg)
+	$(CC) $(CFLAGS_pg) -o $@ -c $<
 
+%_gcov: LDFLAGS = $(LDFLAGS_gcov)
+%_gcov: LDLIBS = $(LDLIBS_gcov)
 %_gcov.o: %.c
-	$(CC) $(LDFLAGS_gcov) -o $@ $^ $(LDLIBS_gcov)
+	$(CC) $(CFLAGS_gcov) -o $@ -c $<
