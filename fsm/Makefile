@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-g -Wall -O
+CFLAGS=-g -Wall -O -I.
 LDFLAGS=
 LDLIBS=-lwiringPi
 

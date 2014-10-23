@@ -16,6 +16,9 @@ enum mcafe_state {
   MCAFE_MILK,
 };
 
+static int button = 0;
+static int timer = 0;
+
 static int button_pressed (fsm_t* this)
 {
   int ret = button;
