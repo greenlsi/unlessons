@@ -1,5 +1,6 @@
 #include <sys/select.h>
 #include <sys/time.h>
+#include <time.h>
 #include <wiringPi.h>
 #include "fsm.h"
 
@@ -9,15 +10,34 @@
 #define GPIO_COFFEE	5
 #define GPIO_MILK	6
 
-enum mcafe_state {
-  MCAFE_WAITING,
-  MCAFE_CUP,
-  MCAFE_COFFEE,
-  MCAFE_MILK,
+#define CUP_TIME	250
+#define COFFEE_TIME	3000
+#define MILK_TIME	3000
+
+enum cofm_state {
+  COFM_WAITING,
+  COFM_CUP,
+  COFM_COFFEE,
+  COFM_MILK,
 };
 
 static int button = 0;
+static void button_isr (void) { button = 1; }
+
 static int timer = 0;
+static void timer_isr (void) { timer = 1; }
+static void timer_start (int ms)
+{
+  timer_t timerid;
+  struct itimerspec value;
+  value.it_value.tv_sec = ms / 1000;
+  value.it_value.tv_nsec = (ms % 1000) * 1000000;
+  value.it_interval.tv_sec = 0;
+  value.it_interval.tv_nsec = 0;
+  timer_create (CLOCK_REALTIME, NULL, &timerid);
+  timer_connect (timerid, timer_isr, 0);
+  timer_settime (timerid, 0, &value, NULL);
+}
 
 static int button_pressed (fsm_t* this)
 {
@@ -37,18 +57,21 @@ static void cup (fsm_t* this)
 {
   digitalWrite (GPIO_LED, LOW);
   digitalWrite (GPIO_CUP, HIGH);
+  timer_start (CUP_TIME);
 }
 
 static void coffee (fsm_t* this)
 {
   digitalWrite (GPIO_CUP, LOW);
   digitalWrite (GPIO_COFFEE, HIGH);
+  timer_start (COFFEE_TIME);
 }
 
 static void milk (fsm_t* this)
 {
   digitalWrite (GPIO_COFFEE, LOW);
   digitalWrite (GPIO_MILK, HIGH);
+  timer_start (MILK_TIME);
 }
 
 static void finish (fsm_t* this)
@@ -58,12 +81,12 @@ static void finish (fsm_t* this)
 }
 
 
-
-static fsm_trans_t mcafe[] = {
-  { MCAFE_WAITING, button_pressed, MCAFE_CUP,     cup    },
-  { MCAFE_CUP,     timer_finished, MCAFE_COFFEE,  coffee },
-  { MCAFE_COFFEE,  timer_finished, MCAFE_MILK,    milk   },
-  { MCAFE_MILK,    timer_finished, MCAFE_WAITING, finish },
+// Explicit FSM description
+static fsm_trans_t cofm[] = {
+  { COFM_WAITING, button_pressed, COFM_CUP,     cup    },
+  { COFM_CUP,     timer_finished, COFM_COFFEE,  coffee },
+  { COFM_COFFEE,  timer_finished, COFM_MILK,    milk   },
+  { COFM_MILK,    timer_finished, COFM_WAITING, finish },
   {-1, NULL, -1, NULL },
 };
 
@@ -97,19 +120,20 @@ void delay_until (struct timeval* next_activation)
   struct timeval now, timeout;
   gettimeofday (&now, NULL);
   timeval_sub (&timeout, next_activation, &now);
-  select (0, NULL, NULL, NULL, &timeout) ;
+  select (0, NULL, NULL, NULL, &timeout);
 }
 
 
 
 int main ()
 {
-  struct timeval clk_period = { 0, 250000 };
+  struct timeval clk_period = { 1, 0 };
   struct timeval next_activation;
-  fsm_t* mcafe_fsm = fsm_new (mcafe);
+  fsm_t* cofm_fsm = fsm_new (cofm);
 
   wiringPiSetup();
   pinMode (GPIO_BUTTON, INPUT);
+  wiringPiISR (GPIO_BUTTON, INT_EDGE_FALLING, button_isr);
   pinMode (GPIO_CUP, OUTPUT);
   pinMode (GPIO_COFFEE, OUTPUT);
   pinMode (GPIO_MILK, OUTPUT);
@@ -118,7 +142,7 @@ int main ()
   
   gettimeofday (&next_activation, NULL);
   while (1) {
-    fsm_fire (mcafe_fsm);
+    fsm_fire (cofm_fsm);
     timeval_add (&next_activation, &next_activation, &clk_period);
     delay_until (&next_activation);
   }
