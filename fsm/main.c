@@ -3,6 +3,12 @@
 #include <wiringPi.h>
 #include "fsm.h"
 
+#define GPIO_BUTTON	2
+#define GPIO_LED	3
+#define GPIO_CUP	4
+#define GPIO_COFFEE	5
+#define GPIO_MILK	6
+
 enum mcafe_state {
   MCAFE_WAITING,
   MCAFE_CUP,
