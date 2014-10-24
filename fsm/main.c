@@ -26,7 +26,7 @@ static int button = 0;
 static void button_isr (void) { button = 1; }
 
 static int timer = 0;
-static void timer_isr (void) { timer = 1; }
+static void timer_isr (union sigval arg) { timer = 1; }
 static void timer_start (int ms)
 {
   timer_t timerid;
