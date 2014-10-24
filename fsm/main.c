@@ -30,12 +30,16 @@ static void timer_start (int ms)
 {
   timer_t timerid;
   struct itimerspec value;
+  struct sigevent se;
+  se.sigev_notify = SIGEV_THREAD;
+  se.sigev_value.sival_ptr = &timerid;
+  se.sigev_notify_function = timer_isr;
+  se.sigev_notify_attributes = NULL;
   value.it_value.tv_sec = ms / 1000;
   value.it_value.tv_nsec = (ms % 1000) * 1000000;
   value.it_interval.tv_sec = 0;
   value.it_interval.tv_nsec = 0;
-  timer_create (CLOCK_REALTIME, NULL, &timerid);
-  timer_connect (timerid, timer_isr, 0);
+  timer_create (CLOCK_REALTIME, &se, &timerid);
   timer_settime (timerid, 0, &value, NULL);
 }
 
