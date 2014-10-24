@@ -1,6 +1,7 @@
 #include <sys/select.h>
 #include <sys/time.h>
 #include <time.h>
+#include <signal.h>
 #include <wiringPi.h>
 #include "fsm.h"
 
