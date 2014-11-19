@@ -132,7 +132,7 @@ void delay_until (struct timeval* next_activation)
 
 int main ()
 {
-  struct timeval clk_period = { 1, 0 };
+  struct timeval clk_period = { 0, 250 * 1000 };
   struct timeval next_activation;
   fsm_t* cofm_fsm = fsm_new (cofm);
 
