@@ -1,0 +1,7 @@
+GPIO3 <- 1
+GPIO3 <- 0
+GPIO4 <- 1
+GPIO4 <- 0
+GPIO5 <- 1
+GPIO5 <- 0
+GPIO6 <- 1

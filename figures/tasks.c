@@ -111,10 +111,10 @@ mutex_init (pthread_mutex_t* m, int prioceiling)
 {
   pthread_mutexattr_t attr;
   pthread_mutexattr_init (&attr);
-  //pthread_mutexattr_setprotocol (&attr, PTHREAD_PRIO_PROTECT);
+  pthread_mutexattr_setprotocol (&attr, PTHREAD_PRIO_PROTECT);
   pthread_mutex_init (m, &attr);
-  //pthread_mutex_setprioceiling
-  //  (m, sched_get_priority_min(SCHED_FIFO) + prioceiling, NULL);
+  pthread_mutex_setprioceiling
+    (m, sched_get_priority_min(SCHED_FIFO) + prioceiling, NULL);
 }
 
 

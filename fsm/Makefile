@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=-g -Wall -O -I.
-LDFLAGS=
+CFLAGS=-g -Wall -O -I. -DNDEBUG
+LDFLAGS=-L.
 LDLIBS=-lwiringPi
 
 all: main
@@ -8,4 +8,8 @@ all: main
 main: main.o fsm.o
 
 clean:
-	$(RM) *.o *~ main
+	$(RM) *.o *~ main libwiringPi.a
+
+libwiringPi.a: wiringPi.o
+	ar rcs $@ $^
+

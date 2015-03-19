@@ -1,3 +1,6 @@
+#include <assert.h>
+#include <stdio.h>
+#include <unistd.h>
 #include <sys/select.h>
 #include <sys/time.h>
 #include <time.h>
@@ -26,27 +29,16 @@ static int button = 0;
 static void button_isr (void) { button = 1; }
 
 static int timer = 0;
-static void timer_isr (union sigval arg) { timer = 1; }
 static void timer_start (int ms)
 {
-  timer_t timerid;
-  struct itimerspec value;
-  struct sigevent se;
-  se.sigev_notify = SIGEV_THREAD;
-  se.sigev_value.sival_ptr = &timerid;
-  se.sigev_notify_function = timer_isr;
-  se.sigev_notify_attributes = NULL;
-  value.it_value.tv_sec = ms / 1000;
-  value.it_value.tv_nsec = (ms % 1000) * 1000000;
-  value.it_interval.tv_sec = 0;
-  value.it_interval.tv_nsec = 0;
-  timer_create (CLOCK_REALTIME, &se, &timerid);
-  timer_settime (timerid, 0, &value, NULL);
+  usleep (ms*1000);
+  timer = 1;
 }
 
 static int button_pressed (fsm_t* this)
 {
   int ret = button;
+  assert (button < 1);
   button = 0;
   return ret;
 }
@@ -146,7 +138,7 @@ int main ()
   digitalWrite (GPIO_LED, HIGH);
   
   gettimeofday (&next_activation, NULL);
-  while (1) {
+  while (scanf("%d %d", &button, &timer) == 2) {
     fsm_fire (cofm_fsm);
     timeval_add (&next_activation, &next_activation, &clk_period);
     delay_until (&next_activation);
