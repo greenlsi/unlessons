@@ -70,7 +70,7 @@ void
 reactor_add_handler (EventHandler* eh)
 {
   r.ehs[r.n_ehs++] = eh;
-  mergesort (r.ehs, r.n_ehs, sizeof (EventHandler*), compare_prio);
+  qsort (r.ehs, r.n_ehs, sizeof (EventHandler*), compare_prio);
 }
 
 static struct timeval*

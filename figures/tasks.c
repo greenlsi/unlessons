@@ -90,9 +90,9 @@ task_new (const char* name, void *(*f)(void *),
 
   pthread_attr_init (&attr);
   pthread_attr_setstacksize (&attr, stacksize);
-  pthread_attr_setscope (&attr, PTHREAD_SCOPE_SYSTEM);
-  pthread_attr_setschedpolicy (&attr, SCHED_FIFO);
-  pthread_attr_setschedparam (&attr, &sparam);
+//  pthread_attr_setscope (&attr, PTHREAD_SCOPE_SYSTEM);
+//  pthread_attr_setschedpolicy (&attr, SCHED_FIFO);
+//  pthread_attr_setschedparam (&attr, &sparam);
   pthread_create (&tdesc->tid, &attr, f, tdesc);
 
   tdesc->name = name;
@@ -111,10 +111,10 @@ mutex_init (pthread_mutex_t* m, int prioceiling)
 {
   pthread_mutexattr_t attr;
   pthread_mutexattr_init (&attr);
-  pthread_mutexattr_setprotocol (&attr, PTHREAD_PRIO_PROTECT);
+//  pthread_mutexattr_setprotocol (&attr, PTHREAD_PRIO_PROTECT);
   pthread_mutex_init (m, &attr);
-  pthread_mutex_setprioceiling
-    (m, sched_get_priority_min(SCHED_FIFO) + prioceiling, NULL);
+//  pthread_mutex_setprioceiling
+//    (m, sched_get_priority_min(SCHED_FIFO) + prioceiling, NULL);
 }
 
 
