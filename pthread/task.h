@@ -10,7 +10,6 @@ void task_setup (void);
 pthread_t task_new (const char* name, void *(*f)(void *),
                     int period_ms, int deadline_ms,
                     int prio, int stacksize);
-void task_register_time (pthread_t tid, struct timeval *time);
 struct timeval *task_get_period (pthread_t tid);
 struct timeval *task_get_deadline (pthread_t tid);
 
