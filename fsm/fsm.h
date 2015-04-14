@@ -1,9 +1,6 @@
 #ifndef FSM_H
 #define FSM_H
 
-#define MAXSTATES 10
-#define MAXINS 32
-
 typedef struct fsm_t fsm_t;
 
 typedef int (*fsm_input_func_t) (fsm_t*);
