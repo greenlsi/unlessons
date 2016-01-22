@@ -27,28 +27,28 @@ enum cofm_state {
 
 static int button = 0;
 static void button_isr (void) { button = 1; }
+static int button_pressed (fsm_t* this) { return button; }
 
 static int timer = 0;
+static void timer_isr (union sigval arg) { timer = 1; }
 static void timer_start (int ms)
 {
-  usleep (ms*1000);
-  timer = 1;
+  timer_t timerid;
+  struct itimerspec spec;
+  struct sigevent se;
+  se.sigev_notify = SIGEV_THREAD;
+  se.sigev_value.sival_ptr = &timerid;
+  se.sigev_notify_function = timer_isr;
+  se.sigev_notify_attributes = NULL;
+  spec.it_value.tv_sec = ms / 1000;
+  spec.it_value.tv_nsec = (ms % 1000) * 1000000;
+  spec.it_interval.tv_sec = 0;
+  spec.it_interval.tv_nsec = 0;
+  timer_create (CLOCK_REALTIME, &se, &timerid);
+  timer_settime (timerid, 0, &spec, NULL);
 }
+static int timer_finished (fsm_t* this) { return timer; }
 
-static int button_pressed (fsm_t* this)
-{
-  int ret = button;
-  assert (button < 1);
-  button = 0;
-  return ret;
-}
-
-static int timer_finished (fsm_t* this)
-{
-  int ret = timer;
-  timer = 0;
-  return ret;
-}
 
 static void cup (fsm_t* this)
 {
