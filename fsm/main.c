@@ -46,6 +46,7 @@ static void timer_start (int ms)
   spec.it_interval.tv_nsec = 0;
   timer_create (CLOCK_REALTIME, &se, &timerid);
   timer_settime (timerid, 0, &spec, NULL);
+  timer = 0;
 }
 static int timer_finished (fsm_t* this) { return timer; }
 
@@ -55,6 +56,7 @@ static void cup (fsm_t* this)
   digitalWrite (GPIO_LED, LOW);
   digitalWrite (GPIO_CUP, HIGH);
   timer_start (CUP_TIME);
+  button = 0;
 }
 
 static void coffee (fsm_t* this)
