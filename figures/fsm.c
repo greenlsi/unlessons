@@ -14,6 +14,7 @@ fsm_init (fsm_t* this, fsm_trans_t* tt)
 {
   int state, in;
   this->tt = tt;
+  this->current_state = tt[0].orig_state;
   for (state = 0; state < MAXSTATES; ++state) {
     for (in = 0; in < MAXINS; ++in) {
       this->next_state[state][in] = state;
