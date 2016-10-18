@@ -161,7 +161,7 @@ initialize_readline (void)
    in case we want to do some simple parsing.  Return the array of matches,
    or NULL if there aren't any. */
 char **
-interp_completion (char *text, int start, int end)
+interp_completion (const char *text, int start, int end)
 {
   char **matches = (char **) NULL;
 
@@ -169,7 +169,7 @@ interp_completion (char *text, int start, int end)
      to complete.  Otherwise it is the name of a file in the current
      directory. */
   if (start == 0)
-    matches = completion_matches (text, command_generator);
+    matches = rl_completion_matches (text, command_generator);
 
   return (matches);
 }
@@ -178,7 +178,7 @@ interp_completion (char *text, int start, int end)
    to start from scratch; without any state (i.e. STATE == 0), then we
    start at the top of the list. */
 char *
-command_generator (char *text, int state)
+command_generator (const char *text, int state)
 {
   static int list_index, len;
   char *name;
