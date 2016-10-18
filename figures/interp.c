@@ -142,8 +142,8 @@ stripwhite (char *string)
 
 /* Interface to Readline Completion */
 
-char *command_generator ();
-char **interp_completion ();
+char *command_generator (const char* text, int state);
+char **interp_completion (const char* text, int start, int end);
 
 void
 initialize_readline (void)
@@ -152,7 +152,7 @@ initialize_readline (void)
   rl_readline_name = "ISEL2014";
 
   /* Tell the completer that we want a crack first. */
-  rl_attempted_completion_function = (CPPFunction *)interp_completion;
+  rl_attempted_completion_function = interp_completion;
 }
 
 /* Attempt to complete on the contents of TEXT.  START and END bound the
@@ -163,9 +163,7 @@ initialize_readline (void)
 char **
 interp_completion (char *text, int start, int end)
 {
-  char **matches;
-
-  matches = (char **)NULL;
+  char **matches = (char **) NULL;
 
   /* If this word is at the start of the line, then it is a command
      to complete.  Otherwise it is the name of a file in the current
