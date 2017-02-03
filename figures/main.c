@@ -1,6 +1,6 @@
 #include <unistd.h>
 #include <stdlib.h>
-#include "tasks.h"
+#include "task.h"
 #include "screen.h"
 #include "window.h"
 #include "sensor1.h"
