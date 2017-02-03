@@ -31,10 +31,7 @@ static int button_pressed (fsm_t* this) { return button; }
 
 static int timer = 0;
 static void timer_isr (union sigval arg) { timer = 1; }
-static void timer_start (int ms)
-{
-  usleep (ms * 1000);
-}
+static void timer_start (int ms) { usleep (ms * 1000); }
 static int timer_finished (fsm_t* this) { return timer; }
 
 
@@ -43,6 +40,7 @@ static void cup (fsm_t* this)
   digitalWrite (GPIO_LED, LOW);
   digitalWrite (GPIO_CUP, HIGH);
   timer_start (CUP_TIME);
+  button = 0;
 }
 
 static void coffee (fsm_t* this)

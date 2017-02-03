@@ -142,8 +142,8 @@ stripwhite (char *string)
 
 /* Interface to Readline Completion */
 
-char *command_generator ();
-char **interp_completion ();
+char *command_generator (const char* text, int state);
+char **interp_completion (const char* text, int start, int end);
 
 void
 initialize_readline (void)
@@ -152,7 +152,7 @@ initialize_readline (void)
   rl_readline_name = "ISEL2014";
 
   /* Tell the completer that we want a crack first. */
-  rl_attempted_completion_function = (CPPFunction *)interp_completion;
+  rl_attempted_completion_function = interp_completion;
 }
 
 /* Attempt to complete on the contents of TEXT.  START and END bound the
@@ -161,17 +161,15 @@ initialize_readline (void)
    in case we want to do some simple parsing.  Return the array of matches,
    or NULL if there aren't any. */
 char **
-interp_completion (char *text, int start, int end)
+interp_completion (const char *text, int start, int end)
 {
-  char **matches;
-
-  matches = (char **)NULL;
+  char **matches = (char **) NULL;
 
   /* If this word is at the start of the line, then it is a command
      to complete.  Otherwise it is the name of a file in the current
      directory. */
   if (start == 0)
-    matches = completion_matches (text, command_generator);
+    matches = rl_completion_matches (text, command_generator);
 
   return (matches);
 }
@@ -180,7 +178,7 @@ interp_completion (char *text, int start, int end)
    to start from scratch; without any state (i.e. STATE == 0), then we
    start at the top of the list. */
 char *
-command_generator (char *text, int state)
+command_generator (const char *text, int state)
 {
   static int list_index, len;
   char *name;
