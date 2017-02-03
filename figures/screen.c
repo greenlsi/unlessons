@@ -4,7 +4,7 @@
 #include <sys/select.h>
 #include <termios.h>
 #include "screen.h"
-#include "tasks.h"
+#include "task.h"
 
 static
 void*

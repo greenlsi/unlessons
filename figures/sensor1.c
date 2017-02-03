@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <wiringPi.h>
-#include "tasks.h"
+#include "task.h"
 #include "sensor1.h"
 
 sensor1_t* sensor1[NSENSOR1];

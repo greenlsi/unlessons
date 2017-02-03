@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "wiringPi.h"
-#include "tasks.h"
+#include "task.h"
 #include "sensor1.h"
 
 static pthread_t t_sensor1_sim;

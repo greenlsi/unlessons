@@ -2,7 +2,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <string.h>
-#include "tasks.h"
+#include "task.h"
 #include "interp.h"
 
 #define MAXTASKS 20

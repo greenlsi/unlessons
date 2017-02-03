@@ -21,7 +21,7 @@ test: main
 	  printf "%-30s" $$i ; \
 	  LINES=24 COLUMNS=80 ./main < $$i 2>&1 > $$i.out ; \
 	  if cmp $$i.out $$i.exp 2>&1 >/dev/null; then \
-	    echo OK ; \
+	    echo PASS ; \
 	  else \
 	    echo FAIL ; \
 	  fi ; \
