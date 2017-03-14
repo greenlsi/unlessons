@@ -10,4 +10,8 @@
 
 void digitalWrite(int gpio, int value);
 
+unsigned millis (void);
+void delay (unsigned int howLong);
+
+
 #endif

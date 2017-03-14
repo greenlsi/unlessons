@@ -63,8 +63,9 @@ static void finish (fsm_t* this)
   digitalWrite (GPIO_LED, HIGH);
 }
 
-
-// Explicit FSM description
+/*
+ * Explicit FSM description
+ */
 static fsm_trans_t cofm[] = {
   { COFM_WAITING, button_pressed, COFM_CUP,     cup    },
   { COFM_CUP,     timer_finished, COFM_COFFEE,  coffee },
@@ -73,10 +74,11 @@ static fsm_trans_t cofm[] = {
   {-1, NULL, -1, NULL },
 };
 
+/*
+ * Utility functions, should be elsewhere
+ */
 
-// Utility functions, should be elsewhere
-
-// res = a - b
+/* res = a - b */
 void
 timeval_sub (struct timeval *res, struct timeval *a, struct timeval *b)
 {
@@ -88,7 +90,7 @@ timeval_sub (struct timeval *res, struct timeval *a, struct timeval *b)
   }
 }
 
-// res = a + b
+/* res = a + b */
 void
 timeval_add (struct timeval *res, struct timeval *a, struct timeval *b)
 {
@@ -97,7 +99,7 @@ timeval_add (struct timeval *res, struct timeval *a, struct timeval *b)
   res->tv_usec = a->tv_usec % 1000000 + b->tv_usec % 1000000;
 }
 
-// wait until next_activation (absolute time)
+/* wait until next_activation (absolute time) */
 void delay_until (struct timeval* next_activation)
 {
   struct timeval now, timeout;

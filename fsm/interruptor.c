@@ -21,15 +21,19 @@ static int boton_pulsado (fsm_t* this) { return boton; }
 static void encender (fsm_t* this) { boton = 0; digitalWrite (GPIO_LIGHT, 1); }
 static void apagar   (fsm_t* this) { boton = 0; digitalWrite (GPIO_LIGHT, 0); }
 
-// Máquina de estados: lista de transiciones
-// { EstadoOrigen, CondicionDeDisparo, EstadoFinal, AccionesSiTransicion }
+/*
+ * Máquina de estados: lista de transiciones
+ * { EstadoOrigen, CondicionDeDisparo, EstadoFinal, AccionesSiTransicion }
+ */
 static fsm_trans_t interruptor[] = {
   { APAGADO,   boton_pulsado, ENCENDIDO, encender },
   { ENCENDIDO, boton_pulsado, APAGADO,   apagar },
   {-1, NULL, -1, NULL },
 };
 
-// wait until next_activation (absolute time)
+/*
+ * wait until next_activation (absolute time)
+ */
 void delay_until (unsigned int next)
 {
   unsigned int now = millis();
