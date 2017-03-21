@@ -108,6 +108,14 @@ timeval_add (struct timeval *res, struct timeval *a, struct timeval *b)
   res->tv_usec = a->tv_usec % 1000000 + b->tv_usec % 1000000;
 }
 
+/* a < b */
+int
+timeval_less (struct timeval *a, struct timeval *b)
+{
+  return (a->tv_sec < b->tv_sec) ||
+    ((a->tv_sec == b->tv_sec) && (a->tv_usec < b->tv_usec));
+}
+
 /* wait until next_activation (absolute time) */
 void delay_until (struct timeval* next_activation)
 {
