@@ -8,6 +8,10 @@
 #include <wiringPi.h>
 #include "fsm.h"
 
+void timeval_sub (struct timeval *res, struct timeval *a, struct timeval *b);
+void timeval_add (struct timeval *res, struct timeval *a, struct timeval *b);
+int timeval_less (struct timeval *a, struct timeval *b);
+
 #define GPIO_BUTTON	2
 #define GPIO_LED	3
 #define GPIO_CUP	4
