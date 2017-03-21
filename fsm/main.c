@@ -31,8 +31,17 @@ static int button_pressed (fsm_t* this) { return button; }
 
 static int timer = 0;
 static void timer_isr (union sigval arg) { timer = 1; }
-static void timer_start (int ms) { usleep (ms * 1000); }
-static int timer_finished (fsm_t* this) { return timer; }
+static struct timeval timer_endtime;
+static void timer_start (int ms) { 
+  struct timeval inc = { ms/1000, (ms % 1000) * 1000 };
+  gettimeofday (&timer_endtime, NULL);
+  timeval_add (&timer_endtime, &timer_endtime, &inc)
+}
+static int timer_finished (fsm_t* this) {
+  struct timeval now;
+  gettimeofday (&now, NULL);
+  return timeval_less (&timer_endtime, &now); 
+}
 
 
 static void cup (fsm_t* this)
