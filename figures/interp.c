@@ -1,12 +1,16 @@
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <ctype.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
+#define MAXCMDS 100
+
 static int done = 0;
 
 int com_help (char* arg);
+int com_sleep (char* arg);
 int com_quit (char* arg);
 
 typedef struct {
@@ -15,17 +19,34 @@ typedef struct {
   char *doc;
 } cmd_t;
 
-cmd_t commands[] = {
+cmd_t commands[MAXCMDS] = {
   { "help", com_help, "Display this text" },
   { "?", com_help, "Synonym for `help'" },
+  { "sleep", com_sleep, "Wait <n> seconds" },
   { "quit", com_quit, "Quit" },
-  { (char *)NULL, NULL, (char *)NULL }
+  { (char *) NULL, NULL, (char *) NULL },
 };
 
 char* stripwhite (char *string);
 cmd_t* find_command (char *name);
 void initialize_readline (void);
 int execute_line (char *line);
+
+int
+interp_addcmd (char* cmd, int (*cmd_func) (char*), char* doc)
+{
+  int i;
+  for (i = 0; i < (MAXCMDS - 1); ++i) {
+    if (! commands[i].name) {
+      commands[i].name = cmd;
+      commands[i].func = cmd_func;
+      commands[i].doc = doc;
+      commands[++i].name = NULL;
+      return 1;
+    }
+  }
+  return 0;
+}
 
 void
 interp_run (void)
@@ -121,8 +142,8 @@ stripwhite (char *string)
 
 /* Interface to Readline Completion */
 
-char *command_generator ();
-char **interp_completion ();
+char *command_generator (const char* text, int state);
+char **interp_completion (const char* text, int start, int end);
 
 void
 initialize_readline (void)
@@ -131,7 +152,7 @@ initialize_readline (void)
   rl_readline_name = "ISEL2014";
 
   /* Tell the completer that we want a crack first. */
-  rl_attempted_completion_function = (CPPFunction *)interp_completion;
+  rl_attempted_completion_function = interp_completion;
 }
 
 /* Attempt to complete on the contents of TEXT.  START and END bound the
@@ -140,17 +161,15 @@ initialize_readline (void)
    in case we want to do some simple parsing.  Return the array of matches,
    or NULL if there aren't any. */
 char **
-interp_completion (char *text, int start, int end)
+interp_completion (const char *text, int start, int end)
 {
-  char **matches;
-
-  matches = (char **)NULL;
+  char **matches = (char **) NULL;
 
   /* If this word is at the start of the line, then it is a command
      to complete.  Otherwise it is the name of a file in the current
      directory. */
   if (start == 0)
-    matches = completion_matches (text, command_generator);
+    matches = rl_completion_matches (text, command_generator);
 
   return (matches);
 }
@@ -159,7 +178,7 @@ interp_completion (char *text, int start, int end)
    to start from scratch; without any state (i.e. STATE == 0), then we
    start at the top of the list. */
 char *
-command_generator (char *text, int state)
+command_generator (const char *text, int state)
 {
   static int list_index, len;
   char *name;
@@ -218,7 +237,13 @@ com_help (char *arg)
 }
 
 
-/* The user wishes to quit using this program.  Just set DONE non-zero. */
+int
+com_sleep (char *arg)
+{
+  sleep (atoi(arg));
+  return 0;
+}
+
 int
 com_quit (char *arg)
 {

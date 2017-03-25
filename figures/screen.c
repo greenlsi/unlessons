@@ -4,22 +4,24 @@
 #include <sys/select.h>
 #include <termios.h>
 #include "screen.h"
-#include "tasks.h"
+#include "task.h"
 
 static
 void*
 refresh_screen (void* arg)
 {
   struct timeval next_activation;
-  struct timeval now, timeout;
-  struct timeval period = { 0, 100000 };
+  struct timeval now, timeout, rtime;
   
   gettimeofday (&next_activation, NULL);
   while (1) {
+    struct timeval *period = task_get_period (pthread_self());
+    timeval_add (&next_activation, &next_activation, period);
     gettimeofday (&now, NULL);
     timeval_sub (&timeout, &next_activation, &now);
+    timeval_sub (&rtime, period, &timeout);
+    task_register_time (pthread_self(), &rtime);
     select (0, NULL, NULL, NULL, &timeout) ;
-    timeval_add (&next_activation, &next_activation, &period);
 
     screen_refresh();
   }
@@ -52,20 +54,16 @@ int getenv_int (const char *var, int defval)
 }
 
 void
-screen_init (int prio)
+screen_setup (int prio)
 {
-  int y;
   columns = getenv_int ("COLUMNS", 80);
-  lines = getenv_int ("LINES", 24);
+  lines = getenv_int ("LINES", 24) / 2;
 
+  mutex_init (&m_scr, prio);
   screen = (char *) malloc ((columns + 1) * lines);
-  memset (screen, ' ', (columns + 1) * lines);
+  screen_clear ();
 
-  for (y = 0; y < lines; ++y)
-    *scr(columns, y) = '\0';
-
-  init_mutex (&m_scr, prio);
-  printf ("\e[%d;1f\e7\e[1J\e8", lines + 1);
+  printf ("\e[2J\e[%d;1f", lines + 1);
   fflush (stdout);
 
   tcgetattr(0, &oldtc);
@@ -74,7 +72,7 @@ screen_init (int prio)
   newtc.c_lflag |= ECHO;
   tcsetattr(0, TCSANOW, &newtc);
 
-  create_task (&t_screen, refresh_screen, NULL, 1000, 1, 1024);
+  t_screen = task_new ("screen", refresh_screen, 500, 500, 1, 1024);
 }
 
 void
@@ -92,6 +90,18 @@ screen_refresh (void)
 
   printf ("\e8\e[?25h");
   fflush (stdout);
+}
+
+void
+screen_clear (void)
+{
+  int y;
+
+  pthread_mutex_lock (&m_scr);
+  memset (screen, ' ', (columns + 1) * lines);
+  for (y = 0; y < lines; ++y)
+    *scr(columns, y) = '\0';
+  pthread_mutex_unlock (&m_scr);
 }
 
 void

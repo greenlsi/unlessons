@@ -1,0 +1,6 @@
+window new
+window text Hola
+window move 10 10
+sleep 2
+quit
+
