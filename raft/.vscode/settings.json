@@ -1,0 +1,6 @@
+{
+    "terminal.integrated.env.osx": {
+        "PATH": "/Users/josem/.platformio/penv/bin:/Users/josem/.platformio/penv:/anaconda3/bin:/Users/josem/src/greenlsi/admin/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/opt/esp-open-sdk/utils:/Library/TeX/texbin:/opt/X11/bin:/Applications/Wireshark.app/Contents/MacOS",
+        "PLATFORMIO_CALLER": "vscode"
+    }
+}
