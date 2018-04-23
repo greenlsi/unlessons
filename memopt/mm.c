@@ -46,7 +46,7 @@ void mm_basic (int n, double* a, double* b, double* c)
             a[i * n + j] += b[i * n + k] * c[k * n + j] ;
 }
 
-void mm_basic (int n, double* a, double* b, double* c, int bs)
+void mm_opt (int n, double* a, double* b, double* c, int bs)
 {
 }
 
@@ -101,7 +101,7 @@ int main (int argc, char *argv[])
   fillmat (n, n, c) ;
 
   MEASURE_TIME ( mm_basic (n, aa, b, c) );
-  MEASURE_TIME ( mm_basic (n, a, b, c, bs) );
+  MEASURE_TIME ( mm_opt (n, a, b, c, bs) );
 
   checkmm (n, a, aa) ;
 }
