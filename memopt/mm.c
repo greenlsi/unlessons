@@ -46,6 +46,9 @@ void mm_basic (int n, double* a, double* b, double* c)
             a[i * n + j] += b[i * n + k] * c[k * n + j] ;
 }
 
+void mm_basic (int n, double* a, double* b, double* c, int bs)
+{
+}
 
 void checkmm (int n, double* a, double* aa)
 {
@@ -53,7 +56,7 @@ void checkmm (int n, double* a, double* aa)
   for (i = 0; i < n; i++)
     for (j = 0; j < n; j++) {
       if (a[i * n + j]-aa[i * n + j] != 0.0) {
-	printf ("(%d, %d) -> diffi: %lf\n", i, j, a[i * n + j]-aa[i * n + j]);
+	printf ("(%d, %d) -> diff: %lf\n", i, j, a[i * n + j] - aa[i * n + j]);
 	return;
       }
     }
@@ -63,18 +66,17 @@ void checkmm (int n, double* a, double* aa)
 int main (int argc, char *argv[])
 {
   double *aa, *a, *b, *c;
-  unsigned int n, blockSize;
-
+  int n, bs;
 
   if (argc != 3) {
     printf ("Usage: %s <matrix_size> <blocksize>\n", argv[0]) ;
     exit (1);
   }
   n = atoi (argv[1]) ;
-  blockSize = atoi (argv[2]) ;
+  bs = atoi (argv[2]) ;
 
-  printf ("matrix size (%d x %d), blocksize (%d, %d)\n", n, n, blockSize, blockSize) ;
-  if (n % blockSize) {
+  printf ("matrix size (%d x %d), blocksize (%d, %d)\n", n, n, bs, bs) ;
+  if (n % bs) {
     printf ("matrix size should be multiple of blocksize\n") ;
     exit (2);
   }
@@ -99,8 +101,7 @@ int main (int argc, char *argv[])
   fillmat (n, n, c) ;
 
   MEASURE_TIME ( mm_basic (n, aa, b, c) );
+  MEASURE_TIME ( mm_basic (n, a, b, c, bs) );
 
   checkmm (n, a, aa) ;
 }
-   
-
