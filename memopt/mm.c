@@ -20,7 +20,7 @@
 
 void setmat (int n, int m, double* a)
 {
-  int i, j ;
+  int i, j;
 
   for (i = 0; i < n; i++)
     for (j = 0 ; j < m; j++)
@@ -29,16 +29,16 @@ void setmat (int n, int m, double* a)
 
 void fillmat (int n, int m, double* a)
 {
-   int i, j ;
+   int i, j;
 
    for (i = 0; i < n; i++)
       for (j = 0 ; j < m; j++)
-         a[i * n + j] = (double)rand() / 3.1e09 ;
+         a[i * n + j] = (double)rand() / 3.1e09;
 }
 
 void mm_basic (int n, double* a, double* b, double* c)
 {
-   int i, j, k ;
+   int i, j, k;
 
    for (i = 0; i < n; i++)
       for (j = 0; j < n; j++)
@@ -49,7 +49,7 @@ void mm_basic (int n, double* a, double* b, double* c)
 
 void checkmm (int n, double* a, double* aa)
 {
-  int i, j ;
+  int i, j;
   for (i = 0; i < n; i++)
     for (j = 0; j < n; j++) {
       if (a[i * n + j]-aa[i * n + j] != 0.0) {
@@ -57,7 +57,7 @@ void checkmm (int n, double* a, double* aa)
 	return;
       }
     }
-  printf ("check OK\n") ;
+  printf ("check OK\n");
 }
 
 int main (int argc, char *argv[])
