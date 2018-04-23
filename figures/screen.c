@@ -80,7 +80,7 @@ screen_refresh (void)
 {
   int y;
 
-  printf ("\e7\e[?25l");
+  printf ("\e7\e[?25l"); // save cursor, hide cursor
 
   pthread_mutex_lock (&m_scr);
   for (y = 0; y < lines; ++y) {
@@ -88,7 +88,7 @@ screen_refresh (void)
   }
   pthread_mutex_unlock (&m_scr);
 
-  printf ("\e8\e[?25h");
+  printf ("\e8\e[?25h"); // show cursor, restore cursor position
   fflush (stdout);
 }
 
