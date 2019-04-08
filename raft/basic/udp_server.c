@@ -49,6 +49,12 @@ udp_server_new (int port)
 int
 udp_server_recv (udp_server_t* this, udp_client_t* cli)
 {
+  struct timeval timeout = { 0, 0 };
+  fd_set rdset;
+  FD_ZERO (&rdset);
+  FD_SET (this->sockfd, &rdset);
+  if (select (this->sockfd + 1, &rdset, NULL, NULL, &timeout) <= 0)
+    return 0;
 	int n = recvfrom (this->sockfd, this->buffer, MAXLINE,
                     MSG_WAITALL,
                     (struct sockaddr *) &cli->addr, &cli->len);
