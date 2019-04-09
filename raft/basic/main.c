@@ -5,6 +5,10 @@
 #include <sys/time.h>
 #include <stdio.h>
 
+#define timeout_follower 150
+#define timeout_candidate 150
+#define timeout_leader 150
+
 int
 timeval_less (const struct timeval* a, const struct timeval* b)
 {
@@ -110,6 +114,12 @@ static int majorityOfVotes (fsm_t* this) {
 }
 
 static void replyAppendEntries (fsm_t* this) {
+  fsm_raft_t* raft = (fsm_raft_t*) this;
+  struct timeval now;
+  gettimeofday (&now, NULL);
+  timeval_random(&raft->next, timeout_follower);//añade 150 y parte aleatoria de hasta 150
+  timeval_add(&raft->next, &raft->next, &now);
+  timeval_add(&raft->next, &raft->next, timeout_follower);
   printf("replyAppendEntries\n");
 }
 
@@ -118,10 +128,18 @@ static void sendVote (fsm_t* this) {
 }
 
 static void sendReqForVote (fsm_t* this) {
+  fsm_raft_t* raft = (fsm_raft_t*) this;
+  struct timeval now;
+  gettimeofday (&now, NULL);
+  timeval_add(&raft->next, timeout_candidate , &now);//mirar tiempos 
   printf("sendReqForVote\n");
 }
 
 static void sendAppendEntries (fsm_t* this) {
+  fsm_raft_t* raft = (fsm_raft_t*) this;
+  struct timeval now;
+  gettimeofday (&now, NULL);
+  timeval_add(&raft->next, timeout_leader , &now);//mirar tiempos
   printf("sendAppendEntries\n");
 }
 
@@ -132,6 +150,7 @@ static void incVotes (fsm_t* this) {
 }
 
 static void resetFollowerTimeout (fsm_t* this) {
+  
   printf("resetFollowerTimeout\n");
 }
 
@@ -143,8 +162,12 @@ static void resetLeaderTimeout (fsm_t* this) {
   printf("resetLeaderTimeout\n");
 }
 
-fsm_t*
-fsm_new_leader (int id)
+static void service_request (fsm_t* this) {
+  printf("serviceRequest\n");
+}
+
+
+fsm_t* fsm_new_leader (int id)
 {
   static fsm_trans_t tt[] = {
      { FOLLOWER,  receivedAppendEntries, FOLLOWER,  replyAppendEntries },
@@ -169,12 +192,39 @@ fsm_new_leader (int id)
 }
 
 
+fsm_t*
+fsm_log_replication (int id)
+{
+  static fsm_trans_t tt[] = {
+     { FOLLOWER,  majorityOfVotes,       LEADER,    elections_winned },
+     { FOLLOWER,  service_request,       FOLLOWER,  send_request_leader },
+     { FOLLOWER,  append_recv_ok,        FOLLOWER,  add_log },
+     { FOLLOWER,  append_recv_fail,      FOLLOWER,  send_fail },
+     { LEADER,    service_request,       LEADER,    new_log },
+     { LEADER,    recv_follower_fail,    LEADER,    upgrade_idc_less },
+     { LEADER,    recv_follower_ok,      LEADER,    upgrade_idc_add },
+     { LEADER,    check_majority,        LEADER,    commit },
+     { LEADER,    new_leader,            FOLLOWER,  leave_leadership },
+     {-1, NULL, -1, NULL },
+    };
+  fsm_raft_t* raft = (fsm_raft_t*) malloc (sizeof (fsm_raft_t));
+  fsm_t* this = (fsm_t*) raft;
+  fsm_init (this, tt);
+  raft->term = 0;
+  raft->votes = 0;
+  raft->nnodes = 0;
+  gettimeofday (&raft->next, NULL);
+  return this;
+}
+
 int
 main (int argc, char* argv[]) {
   int id = (argc > 1)? atoi(argv[1]) : 0;
   fsm_t* fsm_leader = fsm_new_leader (id);
   while (1) {
-    fsm_fire (fsm_leader);
+    
+    fsm_fire (fsm_new_leader);
+    fsm_fire (fsm_log_replication);
     sleep (1);
   }
 }
