@@ -113,8 +113,23 @@ static int majorityOfVotes (fsm_t* this) {
   return raft->votes > (raft->nnodes - raft->votes);
 }
 
-static void replyAppendEntries (fsm_t* this) {
-  fsm_raft_t* raft = (fsm_raft_t*) this;
+static void replyAppendEntries(fsm_t *this)
+{
+  //reply append entries
+  i = 0;
+  for (i; nnodes; i++)
+  {
+    if (msg->append == 1)
+    {
+      log_num[i] = log_num[i] + 1;
+    }
+    else if (msg->append == 0)
+    {
+      log_num[i] = Log_num[i] - 1;
+    }
+  }
+  //timeout
+  fsm_raft_t *raft = (fsm_raft_t *)this;
   struct timeval now;
   gettimeofday (&now, NULL);
   timeval_random(&raft->next, timeout_follower);//añade 150 y parte aleatoria de hasta 150
@@ -135,8 +150,16 @@ static void sendReqForVote (fsm_t* this) {
   printf("sendReqForVote\n");
 }
 
-static void sendAppendEntries (fsm_t* this) {
-  fsm_raft_t* raft = (fsm_raft_t*) this;
+static void sendAppendEntries(fsm_t *this)
+{
+  //send appent entries
+  i = 0;
+  for (i; nnodes; i++)
+  {
+    send.logEntry(term, log_num[0], array_id[i]);
+  }
+  //timeout
+  fsm_raft_t *raft = (fsm_raft_t *)this;
   struct timeval now;
   gettimeofday (&now, NULL);
   timeval_add(&raft->next, timeout_leader , &now);//mirar tiempos
