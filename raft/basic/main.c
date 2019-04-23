@@ -139,11 +139,28 @@ static void replyAppendEntries(fsm_t *this)
 }
 
 static void sendVote (fsm_t* this) {
+  fsm_raft_t* raft = (fsm_raft_t*) this;
+  raft->term = term_recv(); //actualizar mi term, hay que implementar term_recv()
+  //mensaje
+  message_t* msg;
+  msg->src_id; //hay que establecer el id en el mensaje con el mio, habrá que guardar el id del nodo en la struct fsm_raft_t
+  msg->type = MSG_VOTE;
+  //udp_server_send_Vote(&msg); falta por implementar (en funcion de como se reciben los msg)
+
   printf("sendVote\n");
 }
 
 static void sendReqForVote (fsm_t* this) {
   fsm_raft_t* raft = (fsm_raft_t*) this;
+  //candidatura
+  raft->term++;
+  raft->votes=1;
+  //mensaje
+  message_t* msg;
+  msg->src_id; //hay que establecer el id del mensaje con el que tengo
+  msg->type = MSG_REQVOTE;
+  //udp_server_send_ReqForVote(&msg); falta por implementar (en funcion de como se reciben los msg)
+
   struct timeval now;
   gettimeofday (&now, NULL);
   timeval_add(&raft->next, timeout_candidate , &now);//mirar tiempos 
