@@ -31,7 +31,7 @@ node_send_composite (node_t* this, const char* msg)
 /* this is the only instance of the virtual table of composite nodes */
 /* every composite node will have a pointer to this virtual table */
 static struct node_vtbl_t composite_vtbl = {
-  node_send_composite
+  .send = node_send_composite
 };
 
 /* initialize a composite node */
