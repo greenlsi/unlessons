@@ -33,8 +33,8 @@ void
 node_init_v2 (node_t* this, int id, int otro)
 {
   node_v2_t* v2 = (node_v2_t*) this;
+  node_init_v1(this, id);
   this->vtbl = &v2_vtbl;
-  this->id = id;
   v2->otro = otro;
 }
 
