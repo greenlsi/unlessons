@@ -24,7 +24,7 @@ node_send_v2 (node_t* this, const char* msg)
 /* this is the only instance of the virtual table of v2 nodes */
 /* every v2 node will have a pointer to this virtual table */
 static struct node_vtbl_t v2_vtbl = {
-  node_send_v2
+  .send = node_send_v2
 };
 
 /* initialize a v2 node */
