@@ -18,7 +18,8 @@ typedef struct node_v2_t node_v2_t;
 static void
 node_send_v2 (node_t* this, const char* msg)
 {
-  printf ("%d [v2]: %s\n", this->id, msg);
+  node_v2_t* v2 = (node_v2_t*) this;
+  printf ("%d [v2] (otro=%d): %s\n", v2->otro, this->id, msg);
 }
 
 /* this is the only instance of the virtual table of v2 nodes */
