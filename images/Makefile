@@ -14,8 +14,8 @@ all: process_pgm.gprof process_pgm.gcov process_pgm.cachegrind
 %.gcov: %_gcov.output
 	gcov ./$*_gcov 2>&1 | tee >$@
 
-%.cachegrind: cachegrind.out.%
-	cg_annotate --auto=yes $< 2>&1 | tee $@
+%.callgrind: callgrind.out.%
+	callgrind_annotate --auto=yes $< 2>&1 | tee $@
 
 cachegrind.out.%: %
 	valgrind --tool=callgrind --cache-sim=yes --branch-sim=yes \
