@@ -6,7 +6,7 @@ LDFLAGS_pg = -pg
 CFLAGS_gcov = -Wall -Werror -g -fprofile-arcs -ftest-coverage -O
 LDLIBS_gcov = -lgcov
 
-all: process_pgm.gprof process_pgm.gcov process_pgm.cachegrind
+all: process_pgm.gprof process_pgm.gcov process_pgm.callgrind
 
 %.gprof: %_pg.output
 	gprof ./$*_pg 2>&1 | tee $@
