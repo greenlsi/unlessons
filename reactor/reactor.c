@@ -1,7 +1,8 @@
 #include "reactor.h"
 #include <stdlib.h>
+#include "timeval_helper.h"
 
-int
+/*int
 timeval_less (const struct timeval* a, const struct timeval* b)
 {
   return (a->tv_sec == b->tv_sec)? (a->tv_usec < b->tv_usec) :
@@ -30,7 +31,7 @@ timeval_sub (struct timeval* res,
     res->tv_sec --;
     res->tv_usec += 1000000;
   }
-}
+}*/
 
 
 typedef struct reactor_t {
