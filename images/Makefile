@@ -6,7 +6,7 @@ LDFLAGS_pg = -pg
 CFLAGS_gcov = -Wall -Werror -g -fprofile-arcs -ftest-coverage -O
 LDLIBS_gcov = -lgcov
 
-all: process_pgm.gprof process_pgm.gcov process_pgm.cachegrind
+all: process_pgm.gprof process_pgm.gcov process_pgm.callgrind
 
 %.gprof: %_pg.output
 	gprof ./$*_pg 2>&1 | tee $@
@@ -14,12 +14,12 @@ all: process_pgm.gprof process_pgm.gcov process_pgm.cachegrind
 %.gcov: %_gcov.output
 	gcov ./$*_gcov 2>&1 | tee >$@
 
-%.cachegrind: cachegrind.out.%
-	cg_annotate --auto=yes $< 2>&1 | tee $@
+%.callgrind: callgrind.out.%
+	callgrind_annotate --auto=yes $< 2>&1 | tee $@
 
 cachegrind.out.%: %
-	valgrind --tool=cachegrind --branch-sim=yes \
-	  --cachegrind-out-file=$@ ./$* 2>&1 | tee $*.output
+	valgrind --tool=callgrind --cache-sim=yes --branch-sim=yes \
+	  --callgrind-out-file=$@ ./$* 2>&1 | tee $*.output
 
 process_pgm_pg: process_pgm_pg.o
 process_pgm_gcov: process_pgm_gcov.o

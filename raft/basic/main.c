@@ -11,6 +11,48 @@
 #define MAX_MESSAGES 50
 #define MAX_COUNTERS 50
 
+#define timeout_follower 150
+#define timeout_candidate 150
+#define timeout_leader 150
+
+int
+timeval_less (const struct timeval* a, const struct timeval* b)
+{
+  return (a->tv_sec == b->tv_sec)? (a->tv_usec < b->tv_usec) :
+    (a->tv_sec < b->tv_sec);
+}
+
+void
+timeval_add (struct timeval* res,
+             const struct timeval* a, const struct timeval* b)
+{
+  res->tv_sec = a->tv_sec + b->tv_sec;
+  res->tv_usec = a->tv_usec + b->tv_usec;
+  if (res->tv_usec >= 1000000) {
+    res->tv_sec += res->tv_usec / 1000000;
+    res->tv_usec = res->tv_usec % 1000000;
+  }
+}
+
+void
+timeval_sub (struct timeval* res,
+             const struct timeval* a, const struct timeval* b)
+{
+  res->tv_sec = a->tv_sec - b->tv_sec;
+  res->tv_usec = a->tv_usec - b->tv_usec;
+  if (res->tv_usec < 0) {
+    res->tv_sec --;
+    res->tv_usec += 1000000;
+  }
+}
+
+void
+timeval_random (struct timeval* res, int ms)
+{
+  res->tv_sec = 0;
+  res->tv_usec = rand() % (ms * 1000);
+}
+
 enum { MSG_VOTE =          'v',
        MSG_REQVOTE =       'R',
        MSG_APPENDENTRIES = 'A' };
@@ -129,9 +171,35 @@ static int majorityOfVotes (fsm_t* this) {
   return raft->votes > (raft->nnodes - raft->votes);
 }
 
+<<<<<<< HEAD
 static void replyAppendEntries (fsm_t* this) {
   fsm_raft_t* raft = (fsm_raft_t*) this;
   raft_stats_inc (raft, "replyAppendEntries");
+=======
+static void replyAppendEntries(fsm_t *this)
+{
+  //reply append entries
+  i = 0;
+  for (i; nnodes; i++)
+  {
+    if (msg->append == 1)
+    {
+      log_num[i] = log_num[i] + 1;
+    }
+    else if (msg->append == 0)
+    {
+      log_num[i] = Log_num[i] - 1;
+    }
+  }
+  //timeout
+  fsm_raft_t *raft = (fsm_raft_t *)this;
+  struct timeval now;
+  gettimeofday (&now, NULL);
+  timeval_random(&raft->next, timeout_follower);//añade 150 y parte aleatoria de hasta 150
+  timeval_add(&raft->next, &raft->next, &now);
+  timeval_add(&raft->next, &raft->next, timeout_follower);
+  printf("replyAppendEntries\n");
+>>>>>>> 5cb9738a4c0587fba3b982590d1ad6bce7dd3d28
 }
 
 static void sendVote (fsm_t* this) {
@@ -141,6 +209,7 @@ static void sendVote (fsm_t* this) {
 
 static void sendReqForVote (fsm_t* this) {
   fsm_raft_t* raft = (fsm_raft_t*) this;
+<<<<<<< HEAD
   int i;
   message_t msg;
   int len;
@@ -153,6 +222,28 @@ static void sendReqForVote (fsm_t* this) {
 static void sendAppendEntries (fsm_t* this) {
   fsm_raft_t* raft = (fsm_raft_t*) this;
   raft_stats_inc (raft, "sendAppendEntries");
+=======
+  struct timeval now;
+  gettimeofday (&now, NULL);
+  timeval_add(&raft->next, timeout_candidate , &now);//mirar tiempos 
+  printf("sendReqForVote\n");
+}
+
+static void sendAppendEntries(fsm_t *this)
+{
+  //send appent entries
+  i = 0;
+  for (i; nnodes; i++)
+  {
+    send.logEntry(term, log_num[0], array_id[i]);
+  }
+  //timeout
+  fsm_raft_t *raft = (fsm_raft_t *)this;
+  struct timeval now;
+  gettimeofday (&now, NULL);
+  timeval_add(&raft->next, timeout_leader , &now);//mirar tiempos
+  printf("sendAppendEntries\n");
+>>>>>>> 5cb9738a4c0587fba3b982590d1ad6bce7dd3d28
 }
 
 static void incVotes (fsm_t* this) {
@@ -162,8 +253,13 @@ static void incVotes (fsm_t* this) {
 }
 
 static void resetFollowerTimeout (fsm_t* this) {
+<<<<<<< HEAD
   fsm_raft_t* raft = (fsm_raft_t*) this;
   raft_stats_inc (raft, "resetFollowerTimeout");
+=======
+  
+  printf("resetFollowerTimeout\n");
+>>>>>>> 5cb9738a4c0587fba3b982590d1ad6bce7dd3d28
 }
 
 static void resetCandidateTimeout (fsm_t* this) {
@@ -176,8 +272,17 @@ static void resetLeaderTimeout (fsm_t* this) {
   raft_stats_inc (raft, "resetLeaderTimeout");
 }
 
+<<<<<<< HEAD
 fsm_t*
 fsm_new_leader (int argc, char* argv[])
+=======
+static void service_request (fsm_t* this) {
+  printf("serviceRequest\n");
+}
+
+
+fsm_t* fsm_new_leader (int id)
+>>>>>>> 5cb9738a4c0587fba3b982590d1ad6bce7dd3d28
 {
   static fsm_trans_t tt[] =
     {
@@ -269,6 +374,31 @@ interp_raft_new (fsm_raft_t* raft)
   return (interp_t*) this;
 }
 
+fsm_t*
+fsm_log_replication (int id)
+{
+  static fsm_trans_t tt[] = {
+     { FOLLOWER,  majorityOfVotes,       LEADER,    elections_winned },
+     { FOLLOWER,  service_request,       FOLLOWER,  send_request_leader },
+     { FOLLOWER,  append_recv_ok,        FOLLOWER,  add_log },
+     { FOLLOWER,  append_recv_fail,      FOLLOWER,  send_fail },
+     { LEADER,    service_request,       LEADER,    new_log },
+     { LEADER,    recv_follower_fail,    LEADER,    upgrade_idc_less },
+     { LEADER,    recv_follower_ok,      LEADER,    upgrade_idc_add },
+     { LEADER,    check_majority,        LEADER,    commit },
+     { LEADER,    new_leader,            FOLLOWER,  leave_leadership },
+     {-1, NULL, -1, NULL },
+    };
+  fsm_raft_t* raft = (fsm_raft_t*) malloc (sizeof (fsm_raft_t));
+  fsm_t* this = (fsm_t*) raft;
+  fsm_init (this, tt);
+  raft->term = 0;
+  raft->votes = 0;
+  raft->nnodes = 0;
+  gettimeofday (&raft->next, NULL);
+  return this;
+}
+
 int
 main (int argc, char* argv[])
 {
@@ -276,10 +406,16 @@ main (int argc, char* argv[])
   //fsm_t* fsm_logrepl = fsm_new_logrepl ((fsm_raft_t *) fsm_leader);
   interp_t* interp = interp_raft_new ((fsm_raft_t*) fsm_leader);
   while (1) {
+<<<<<<< HEAD
     raft_get_messages ((fsm_raft_t*) fsm_leader);
     fsm_fire (fsm_leader);
     //fsm_fire (fsm_logrepl);
     interp_run (interp);
+=======
+    
+    fsm_fire (fsm_new_leader);
+    fsm_fire (fsm_log_replication);
+>>>>>>> 5cb9738a4c0587fba3b982590d1ad6bce7dd3d28
     sleep (1);
   }
 }
