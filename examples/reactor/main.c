@@ -47,14 +47,24 @@ static void* reactor_main (void* arg)
   }
 }
 
+
 int cmd_up (char* arg) { op = 'u'; return 0; }
 int cmd_down (char* arg) { op = 'd'; return 0; }
+int cmd_temp (char* arg) {
+  extern int temp;
+  if (*arg)
+    temp = atoi(arg);
+  else
+    printf ("%d\n", temp);
+  return 0;
+}
 
 int
 main ()
 {
   interp_addcmd ("up", cmd_up, "increment setpoint");
   interp_addcmd ("down", cmd_down, "decrement setpoint");
+  interp_addcmd ("temp", cmd_temp, "get/set temperature");
   task_new ("reactor", reactor_main, 1000, 1000, 1, 1024);
   interp_run();
   return 0;

@@ -44,6 +44,14 @@ static char op;
 
 int cmd_up (char* arg) { op = 'u'; return 0; }
 int cmd_down (char* arg) { op = 'd'; return 0; }
+int cmd_temp (char* arg) {
+  extern int temp;
+  if (*arg)
+    temp = atoi(arg);
+  else
+    printf ("%d\n", temp);
+  return 0;
+}
 
 static void* control_func (void* arg)
 {
@@ -53,6 +61,7 @@ static void* control_func (void* arg)
  
   interp_addcmd ("up", cmd_up, "increment setpoint");
   interp_addcmd ("down", cmd_down, "decrement setpoint");
+  interp_addcmd ("temp", cmd_temp, "get/set temperature");
 
   gettimeofday (&next_activation, NULL);
   while (1) {

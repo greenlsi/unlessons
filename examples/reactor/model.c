@@ -12,7 +12,7 @@ struct fsm_heater_t {
 };
 typedef struct fsm_heater_t fsm_heater_t;
 
-static int temp;
+int temp;
 
 int temp_low (fsm_t* this) {
 	fsm_heater_t* fsm = (fsm_heater_t*) this;
