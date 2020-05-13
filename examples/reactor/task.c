@@ -72,11 +72,12 @@ task_new (const char* name, void *(*f)(void *),
 void
 mutex_init (pthread_mutex_t* m, int prioceiling)
 {
+  int oldprio;
   pthread_mutexattr_t attr;
   pthread_mutexattr_init (&attr);
   
   /* Only for priority ceiling protocol (not in Xenomai) */
-  //pthread_mutexattr_setprotocol (&attr, PTHREAD_PRIO_PROTECT);
+  pthread_mutexattr_setprotocol (&attr, PTHREAD_PRIO_PROTECT);
 
   /* Only for priority inheritance protocol */ 
   /* pthread_mutexattr_setprotocol (&attr, PTHREAD_PRIO_INHERIT); */
@@ -84,7 +85,7 @@ mutex_init (pthread_mutex_t* m, int prioceiling)
   pthread_mutex_init (m, &attr);
 
   /* Only for priority ceiling protocol (not in Xenomai) */
-  //pthread_mutex_setprioceiling (m, prioceiling, NULL);
+  pthread_mutex_setprioceiling (m, prioceiling, &oldprio);
 }
 
 

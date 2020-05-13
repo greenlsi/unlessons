@@ -72,11 +72,12 @@ task_new (const char* name, void *(*f)(void *),
 void
 mutex_init (pthread_mutex_t* m, int prioceiling)
 {
+  int oldprio;
   pthread_mutexattr_t attr;
   pthread_mutexattr_init (&attr);
   
   /* Only for priority ceiling protocol (not in Xenomai) */
-  //pthread_mutexattr_setprotocol (&attr, PTHREAD_PRIO_PROTECT);
+  pthread_mutexattr_setprotocol (&attr, PTHREAD_PRIO_PROTECT);
 
   /* Only for priority inheritance protocol */ 
   /* pthread_mutexattr_setprotocol (&attr, PTHREAD_PRIO_INHERIT); */
@@ -84,35 +85,9 @@ mutex_init (pthread_mutex_t* m, int prioceiling)
   pthread_mutex_init (m, &attr);
 
   /* Only for priority ceiling protocol (not in Xenomai) */
-  //pthread_mutex_setprioceiling (m, prioceiling, NULL);
+  pthread_mutex_setprioceiling (m, prioceiling, &oldprio);
 }
 
-
-void
-timeval_sub (struct timeval *res, struct timeval *a, struct timeval *b)
-{
-  res->tv_sec = a->tv_sec - b->tv_sec;
-  res->tv_usec = a->tv_usec - b->tv_usec;
-  if (res->tv_usec < 0) {
-    --res->tv_sec;
-    res->tv_usec += 1000000;
-  }
-}
-
-void
-timeval_add (struct timeval *res, struct timeval *a, struct timeval *b)
-{
-  res->tv_sec = a->tv_sec + b->tv_sec
-    + a->tv_usec / 1000000 + b->tv_usec / 1000000; 
-  res->tv_usec = a->tv_usec % 1000000 + b->tv_usec % 1000000;
-}
-
-int
-timeval_less (struct timeval *a, struct timeval *b)
-{
-  return (a->tv_sec < b->tv_sec) ||
-    ((a->tv_sec == b->tv_sec) && (a->tv_usec < b->tv_usec));
-}
 
 int
 timeval_get_ms (struct timeval *a)
