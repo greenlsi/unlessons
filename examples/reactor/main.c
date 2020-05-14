@@ -20,10 +20,11 @@ static void eh_fsm_func (struct event_handler_t* this)
   timeval_add (&this->next_activation, &this->next_activation, &period);
 }
 
-static event_handler_t* eh_new_fsm (fsm_t* fsm, int prio)
+event_handler_t* 
+eh_new_fsm (fsm_t* fsm, int prio)
 {
   event_handler_fsm_t* eh = (event_handler_fsm_t*) malloc(sizeof(event_handler_fsm_t));
-  event_handler_init ((event_handler_t*) eh, prio, eh_fsm_func);
+  event_handler_init ((event_handler_t*) eh, prio, -1, eh_fsm_func, NULL, NULL, NULL);
   eh->fsm = fsm;
   return (event_handler_t*) eh;
 }
@@ -33,14 +34,18 @@ static int setpoint;
 static int setpoint_get (void) { return setpoint; }
 static void setpoint_set (int val) { setpoint = val; }
 
+event_handler_t* eh_new_http (int fd);
+
 static void* reactor_main (void* arg)
 {
   reactor_init ();
 
   reactor_add_handler(eh_new_fsm(
-      fsm_new_heater(setpoint_get, setpoint_set), 1));
+      fsm_new_heater(setpoint_get, setpoint_set), 2));
   reactor_add_handler(eh_new_fsm(
-      fsm_new_control(setpoint_get, setpoint_set, &op), 2));
+      fsm_new_control(setpoint_get, setpoint_set, &op), 3));
+
+  reactor_add_handler(eh_new_acceptor(1, 18888, eh_new_http));
 
   while (1) {
     reactor_handle_events ();
