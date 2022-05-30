@@ -1,4 +1,6 @@
-#include "esp_common.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <esp_log.h>
 #include "reactor.h"
 
 typedef struct reactor_t {
